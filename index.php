@@ -26,14 +26,13 @@
  */
 
 require_once(dirname(__FILE__) . '/../../config.php'); //Required
-require_once($CFG->dirroot.'/mod/throwquestion/form.php');
-
+global $PAGE, $CFG, $OUTPUT, $DB;
 $id = required_param('id', PARAM_INT); // Course.
 
-global $PAGE, $CFG, $OUTPUT, $DB;
+
 
 require_login();//require login
-$url = new moodle_url('/mod/throwquestions/throwquestion.php');
+$url = new moodle_url('/mod/throwquestions/view.php');
 $context = context_system::instance();//context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url($url);

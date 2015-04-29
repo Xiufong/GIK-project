@@ -25,18 +25,21 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once (dirname ( __FILE__ ) . '/../../config.php'); // Required
-require_once ($CFG->dirroot . '/mod/throwquestions/form.php');
+
 global $PAGE, $CFG, $OUTPUT, $DB;
 
 $id = required_param ( 'id', PARAM_INT ); // Course.
+if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
+	print_error (  "Invalid Course Module");
+}
 
 require_login (); // require login
 $strname = "THROW QUESTION";
-$url = new moodle_url ( '/mod/throwquestions/throwquestion.php' );
-$context = context_system::instance (); // context_system::instance();
+$url = new moodle_url ( '/mod/throwquestions/view.php' );
+$context = context_system::instance ($cm->id); // context_system::instance();
 $PAGE->set_context ( $context );
 $PAGE->set_url ( $url );
-$PAGE->set_url ( '/mod/newmodule/index.php', array (
+$PAGE->set_url ( '/mod/throwquestions/view.php', array (
 		'id' => $id 
 ) );
 $PAGE->navbar->add ( $strname );
@@ -51,20 +54,20 @@ $sqlusers = "SELECT u.username as name, u.lastname as last,c.fullname as coursen
 $users = $DB->get_records_sql ( $sqlusers, array (
 		$id 
 ) );
-$data='';
-foreach ($users as $user){
-	$data[]=array(
-			$user->name.$user->last,
-			''
+$data = '';
+foreach ( $users as $user ) {
+	$data [] = array (
+			$user->name . $user->last,
+			'' 
 	);
 }
-$table= new html_table ();
+$table = new html_table ();
 $table->attributes ['style'] = "width: 100%; text-align:center;";
-$table->head=array(
+$table->head = array (
 		'Alumnos',
-		'Algo');
-$table->data =$data;
-echo html_writer::table($table);
-
+		'Algo' 
+);
+$table->data = $data;
+echo html_writer::table ( $table );
 
 echo $OUTPUT->footer ();
