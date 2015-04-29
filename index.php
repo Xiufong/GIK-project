@@ -36,7 +36,7 @@ $url = new moodle_url('/mod/throwquestions/view.php');
 $context = context_system::instance();//context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url($url);
-$PAGE->set_url('/mod/newmodule/index.php', array('id' => $id));
+$PAGE->set_url('/mod/throwquestion/index.php', array('id' => $id));
 $PAGE->navbar->add($strname);
 $PAGE->set_title("$course->shortname: $strname");
 $PAGE->set_heading($course->fullname);

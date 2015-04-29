@@ -16,12 +16,12 @@
 
 
 /**
- * English strings for newmodule
+ * English strings for throwquestion
  *
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_newmodule
+ * @package    mod_throwquestion
  * @copyright  2015 Your Name
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,10 +30,11 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['throwquestions'] = 'Throw Questions';
 $string['modulenameplural'] = 'Throw Questions';
+$string['modulename']='Throw Questions';
 $string['modulename_help'] = 'Use the Throw Questions module for... | The Throw Questions module allows...';
-$string['newmodulefieldset'] = 'Custom example fieldset';
-$string['newmodulename'] = 'Throw Questions';
-$string['newmodulename_help'] = 'This is the content of the help tooltip associated with the newmodulename field. Markdown syntax is supported.';
-$string['newmodule'] = 'Throw Questions';
+$string['throwquestionsfieldset'] = 'Custom example fieldset';
+$string['throwquestionsname'] = 'Throw Questions';
+$string['throwquestionsname_help'] = 'This is the content of the help tooltip associated with the throwquestionname field. Markdown syntax is supported.';
+$string['throwquestions'] = 'Throw Questions';
 $string['pluginadministration'] = 'Throw Questions administration';
 $string['pluginname'] = 'Throw Questions';

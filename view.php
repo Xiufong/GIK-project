@@ -29,14 +29,15 @@ require_once (dirname ( __FILE__ ) . '/../../config.php'); // Required
 global $PAGE, $CFG, $OUTPUT, $DB;
 
 $id = required_param ( 'id', PARAM_INT ); // Course.
+
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
-	print_error (  "Invalid Course Module");
+	print_error ( "Invalid Course Module" );
 }
 
 require_login (); // require login
-$strname = "THROW QUESTION";
+$strname = get_string("throwquestions",'mod_throwquestions');
 $url = new moodle_url ( '/mod/throwquestions/view.php' );
-$context = context_system::instance ($cm->id); // context_system::instance();
+$context = context_system::instance (); // context_system::instance();
 $PAGE->set_context ( $context );
 $PAGE->set_url ( $url );
 $PAGE->set_url ( '/mod/throwquestions/view.php', array (
@@ -47,13 +48,15 @@ $PAGE->set_pagelayout ( 'standard' );
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( $strname );
+
 $sqlusers = "SELECT u.username as name, u.lastname as last,c.fullname as coursename from {user} as u 
 			INNER JOIN {user_enrolments} as ue ON u.id=ue.userid
 			INNER JOIN {course} as c ON ue.enrolid=c.id
-			WHERE c.id=? and ";
+			WHERE c.id=?";
 $users = $DB->get_records_sql ( $sqlusers, array (
 		$id 
 ) );
+var_dump($users);
 $data = '';
 foreach ( $users as $user ) {
 	$data [] = array (
