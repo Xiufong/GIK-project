@@ -24,39 +24,46 @@
  * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once (dirname ( __FILE__ ) . '/../../config.php'); // Required
+require_once (dirname ( dirname ( dirname ( __FILE__ ) ) ) . '/config.php'); // Required
+require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB;
 
-$id = required_param ( 'id', PARAM_INT ); // Course.
+$cmid = required_param ( 'id', PARAM_INT ); // Course module id
 
-if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
+if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
 }
+if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
+		'id' => $cm->instance 
+) )) {
+	print_error ( "error" );
+}
+if (! $course = $DB->get_record ( 'course', array (
+		'id' => $throwquestion->course 
+) )) {
+	print_error ( 'error' );
+}
 
-require_login (); // require login
-$strname = get_string("throwquestions",'mod_throwquestions');
-$url = new moodle_url ( '/mod/throwquestions/view.php' );
-$context = context_system::instance (); // context_system::instance();
-$PAGE->set_context ( $context );
+$url = new moodle_url ( '/mod/throwquestions/view.php', array (
+		'id' => $cm->id 
+) ); // URL
+     
+// context module
+$context = context_module::instance ( $cm->id );
+
+// require login
+require_login ( $course->id );
+
 $PAGE->set_url ( $url );
-$PAGE->set_url ( '/mod/throwquestions/view.php', array (
-		'id' => $id 
-) );
-$PAGE->navbar->add ( $strname );
+$PAGE->set_context ( $context );
+$PAGE->set_course ( $course );
+$PAGE->set_heading ( $course->fullname );
+$PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
-echo $OUTPUT->header ();
-echo $OUTPUT->heading ( $strname );
-
-$sqlusers = "SELECT u.username as name, u.lastname as last,c.fullname as coursename from {user} as u 
-			INNER JOIN {user_enrolments} as ue ON u.id=ue.userid
-			INNER JOIN {course} as c ON ue.enrolid=c.id
-			WHERE c.id=?";
-$users = $DB->get_records_sql ( $sqlusers, array (
-		$id 
-) );
-var_dump($users);
+$users = throwquestions_get_students ( $course->id );
+// make an array for the table data
 $data = '';
 foreach ( $users as $user ) {
 	$data [] = array (
@@ -64,6 +71,7 @@ foreach ( $users as $user ) {
 			'' 
 	);
 }
+// create table class
 $table = new html_table ();
 $table->attributes ['style'] = "width: 100%; text-align:center;";
 $table->head = array (
@@ -71,6 +79,13 @@ $table->head = array (
 		'Algo' 
 );
 $table->data = $data;
-echo html_writer::table ( $table );
+$userstable = html_writer::table ( $table );
+
+/* ----------VIEW---------- */
+
+echo $OUTPUT->header ();
+echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
+// print table
+echo $userstable;
 
 echo $OUTPUT->footer ();

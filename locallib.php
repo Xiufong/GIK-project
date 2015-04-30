@@ -15,17 +15,31 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
+ * Internal library of functions for module newmodule
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
+ * All the newmodule specific functions, needed to implement the module
+ * logic, should go here. Never include this file from your lib.php!
  *
  * @package mod_throwquestions
  * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined ( 'MOODLE_INTERNAL' ) || die ();
-$plugin->pluginname='mod_throwquestions';
-$plugin->component = 'mod_throwquestions';
-$plugin->version = 2015042609;
-
+function throwquestions_get_students($courseid) {
+	global $DB;
+	
+	$query = 'SELECT u.id, u.idnumber, u.firstname as name, u.lastname as last, e.enrol
+			FROM {user_enrolments} ue
+			JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = ?)
+			JOIN {context} c ON (c.contextlevel = 50 AND c.instanceid = e.courseid)
+			JOIN {role_assignments} ra ON (ra.contextid = c.id AND ra.roleid = 5 AND ra.userid = ue.userid)
+			JOIN {user} u ON (ue.userid = u.id)
+			ORDER BY lastname ASC';
+	
+	// Se toman los resultados del query dentro de una variable.
+	$rs = $DB->get_recordset_sql ( $query, array (
+			$courseid 
+	) );
+	
+	return $rs;
+}
