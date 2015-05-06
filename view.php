@@ -67,7 +67,7 @@ $users = throwquestions_get_students ( $course->id );
 $data = '';
 foreach ( $users as $user ) {
 	$data [] = array (
-			$user->name . $user->last,
+			$user->name .' '.$user->last,
 			'' 
 	);
 }
