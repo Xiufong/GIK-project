@@ -27,11 +27,11 @@
 require_once (dirname ( dirname ( dirname ( __FILE__ ) ) ) . '/config.php'); // Required
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
 
-global $PAGE, $CFG, $OUTPUT, $DB;
+global $PAGE, $CFG, $OUTPUT, $DB,$USER;
 
-$cmid = required_param ( 'id', PARAM_INT ); // Course module id
+$id = required_param ( 'id', PARAM_INT ); // Course module id
 
-if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
+if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
 	print_error ( "Invalid Course Module" );
 }
 if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
@@ -45,8 +45,8 @@ if (! $course = $DB->get_record ( 'course', array (
 	print_error ( 'error' );
 }
 
-$url = new moodle_url ( '/mod/throwquestions/view.php', array (
-		'id' => $cm->id 
+$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
+		'cmid' => $cm->id 
 ) ); // URL
      
 // context module
@@ -56,36 +56,19 @@ $context = context_module::instance ( $cm->id );
 require_login ( $course->id );
 
 $PAGE->set_url ( $url );
-$PAGE->set_context ( $context );
+// $PAGE->set_context ( $context );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
 $users = throwquestions_get_students ( $course->id );
-// make an array for the table data
-$data = '';
-foreach ( $users as $user ) {
-	$data [] = array (
-			$user->name .' '.$user->last,
-			'' 
-	);
-}
-// create table class
-$table = new html_table ();
-$table->attributes ['style'] = "width: 100%; text-align:center;";
-$table->head = array (
-		'Alumnos',
-		'Algo' 
-);
-$table->data = $data;
-$userstable = html_writer::table ( $table );
 
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-// print table
-echo $userstable;
+echo $OUTPUT->tabtree ( option_tab($cm->id,$course->id,$USER->sesskey,$context),'viewlist');
 
+echo get_all_students ( $users, $cm->id);
 echo $OUTPUT->footer ();
