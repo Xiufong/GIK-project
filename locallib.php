@@ -94,21 +94,22 @@ function get_all_students($users, $cmid) {
 function get_all_the_questions_from_question_bank_table($context, $cmid) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
-	$categorias = get_categories_for_contexts ( $context, 'name ASC' );
+	$categories = get_categories_for_contexts ( $context, 'name ASC' );
 	
 	$data = '';
 	
-	foreach ( $categorias as $categoria ) {
-		$preguntas = $DB->get_records ( 'question', array (
-				'category' => $categoria->id,
+	foreach ( $categories as $category ) {
+		$questions = $DB->get_records ( 'question', array (
+				'category' => $category->id,
 				'qtype' => 'multichoice' 
 		) );
-		foreach ( $preguntas as $pregunta ) {
-			$url = new moodle_url ( '/mod/throwquestions/view.php', array (
-					'id' => $cmid 
+		foreach ( $questions as $question ) {
+			$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+					'id' => $cmid,
+					'qid' => $question->id 
 			) );
 			$data [] = array (
-					$pregunta->questiontext . ' ' . $pregunta->id,
+					$question->questiontext . ' ' . $question->id,
 					$OUTPUT->single_button ( $url, 'I want this question!' ) 
 			);
 		}
@@ -126,11 +127,11 @@ function get_all_the_questions_from_question_bank_table($context, $cmid) {
 }
 /**
  * This function gets a navigation tab.
- * 
- * @param int $cmid
- * @param int $courseid
- * @param text $sesskey
- * @param obj $context
+ *
+ * @param int $cmid        	
+ * @param int $courseid        	
+ * @param text $sesskey        	
+ * @param obj $context        	
  * @return multitype:tabobject
  */
 function option_tab($cmid, $courseid, $sesskey, $context) {
@@ -139,11 +140,87 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
 	$tabs = array ();
 	$tab = new tabobject ( 'list', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Throwquestions' );
 	$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
-	//check if has capability to create questions
+	// check if has capability to create questions
 	if (has_capability ( 'moodle/question:add', $context )) {
 		$tab->subtree [] = new tabobject ( 'create', $CFG->wwwroot . "/question/question.php?category=&courseid={$courseid}&sesskey={$sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$courseid}&category=1", 'Create Question' );
 	}
 	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Check' );
 	$tabs [] = $tab;
 	return $tabs;
+}
+function answer_menu($context, $cmid, $questionid) {
+	global $PAGE, $CFG, $OUTPUT, $DB;
+	
+	$iscorrect = optional_param ( 'result', 0, PARAM_INT );
+	
+	// get all the categories from the course.
+	$categories = get_categories_for_contexts ( $context, 'name ASC' );
+	
+	// initialization for the variable $data that will go inside the table.
+	$data = '';
+	
+	foreach ( $categories as $category ) {
+		// al the question from an specific type of question and from all categories.
+		$questions = $DB->get_records ( 'question', array (
+				'category' => $category->id,
+				'qtype' => 'multichoice' 
+		) );
+		foreach ( $questions as $question ) {
+			if ($question->id == $questionid) {
+				// request all the answers for an specific question.
+				$answers = $DB->get_records ( 'question_answers', array (
+						'question' => $questionid 
+				) );
+				$questiontext = $question->questiontext;
+				// run all the answers
+				foreach ( $answers as $answer ) {
+					$answerid = $answer->id;
+					$answertext = $answer->answer;
+					$percentage = $answer->fraction;
+					if ($percentage == 1) {
+						$result = 1;
+					} elseif ($percentage == - 1) {
+						$result = 2;
+					} else {
+						echo 'Error';
+						die ();
+					}
+					// url to redirect the button.
+					$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+							'id' => $cmid,
+							'result' => $result, 
+							'qid'=>$questionid,
+							'answerid'=>$answerid
+					) )
+					;
+					if ($iscorrect == 0) {
+						$answered = $OUTPUT->single_button ( $url, 'I want this one!' );
+						$fromcorrectfilter = '';
+					} elseif ($iscorrect == 1) {
+						$answered = 'Already Answered';
+						$fromcorrectfilter = 'Correct';
+					} elseif ($iscorrect == 2) {
+						$answered = 'Already Answered';
+						$fromcorrectfilter = 'Incorrect';
+					}
+					$data [] = array (
+							$answertext,
+							$answered 
+					);
+				}
+			}
+		}
+	}
+	echo '<h1>' . $questiontext . '</h1>';
+	$table = new html_table ();
+	$table->attributes ['style'] = "text-align:center;";
+	$table->head = array (
+			'Answer',
+			'Select' 
+	);
+	$table->data = $data;
+	$answertable = html_writer::table ( $table );
+	echo '<h1>' . $fromcorrectfilter . '</h1>';
+	
+	return $answertable;
 }

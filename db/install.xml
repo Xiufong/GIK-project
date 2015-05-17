@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/throwquestions/db" VERSION="20150506" COMMENT="XMLDB file for Moodle mod/throwquestions"
+<XMLDB PATH="mod/throwquestions/db" VERSION="20150517" COMMENT="XMLDB file for Moodle mod/throwquestions"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -18,21 +18,9 @@
         <FIELD NAME="sender_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="sender id"/>
         <FIELD NAME="receiver_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="receiver id"/>
         <FIELD NAME="question" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="question"/>
-        <FIELD NAME="correct" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="correct answer"/>
-        <FIELD NAME="incorrect_1" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="incorrect answer"/>
-        <FIELD NAME="incorrect_2" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="incorrect answer"/>
-        <FIELD NAME="incorrect_3" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="incorrect answer"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="score" COMMENT="score">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="battle_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="battle_id"/>
-        <FIELD NAME="winner" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="winner"/>
-        <FIELD NAME="loser" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="loser"/>
+        <FIELD NAME="status" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="State of the battle 1 if ended 0 if pending"/>
+        <FIELD NAME="winner" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="answer" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="answer"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

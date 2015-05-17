@@ -68,30 +68,7 @@ function xmldb_throwquestions_upgrade($oldversion) {
      *
      * First example, some fields were added to install.xml on 2007/04/01
      */
-    if ($oldversion < 2015050602) {
-
-        // Define table score to be created.
-        $table = new xmldb_table('score');
-
-        // Adding fields to table score.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('battle_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('winner', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('loser', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table score.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-        // Conditionally launch create table for score.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Throwquestions savepoint reached.
-        upgrade_mod_savepoint(true, 2015050602, 'throwquestions');
-    }
-    
-    
+       
     if ($oldversion < 2015050602) {
 
         // Define table battle to be created.
@@ -102,10 +79,9 @@ function xmldb_throwquestions_upgrade($oldversion) {
         $table->add_field('sender_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
         $table->add_field('receiver_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
         $table->add_field('question', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('correct', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('incorrect_1', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('incorrect_2', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('incorrect_3', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_BINARY, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('winner', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('answer', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
 
         // Adding keys to table battle.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -118,6 +94,8 @@ function xmldb_throwquestions_upgrade($oldversion) {
         // Throwquestions savepoint reached.
         upgrade_mod_savepoint(true, 2015050602, 'throwquestions');
     }
+    
+    
     
     
     if ($oldversion < 2015050601) {

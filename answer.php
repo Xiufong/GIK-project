@@ -32,7 +32,7 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 global $PAGE, $CFG, $OUTPUT, $DB;
 
 $cmid = required_param ( 'id', PARAM_INT );
-$userid = required_param ( 'user', PARAM_INT );
+$questionid = required_param ( 'qid', PARAM_INT );
 
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
@@ -55,8 +55,9 @@ $id = $course->id;
 require_login ( $id );
 
 $contextcourse = context_course::instance ( $id );
-$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
-		'cmid' => $cmid,'user'=>$userid
+
+$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+		'cmid' => $cm->id 
 ) );
 $PAGE->set_url ( $url );
 // $PAGE->set_context ( $context );
@@ -64,12 +65,11 @@ $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
-
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print table
-echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id );
+echo answer_menu ( $contextcourse->id, $cm->id,$questionid );
 
 echo $OUTPUT->footer ();
