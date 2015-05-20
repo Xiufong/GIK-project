@@ -54,9 +54,9 @@ $newbattle = $DB->insert_record ( 'battle', $insert );
 
 // Validates if the insertion was executed correctly, if it wasn't it will display a message.
 if (! $newbattle) {
-	$validation = "Error: Sorry Bro, your battle couldn't be done";
+	$validation = get_string ( 'battlecouldnotbecomplete', 'mod_throwquestions' );
 	redirect ( $url, $validation, 10 );
 } else {
-	$validation = "Yay! Congrats you have started a WAR";
+	$validation = get_string ( 'youhavesentabattle', 'mod_throwquestions' );
 	redirect ( $url, $validation, 10 );
 }

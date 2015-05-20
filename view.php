@@ -33,19 +33,19 @@ $id = required_param ( 'id', PARAM_INT ); // Course module id
                                           
 // Corroborates the Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
-	print_error ( "Invalid Course Module" );
+	print_error ( get_string ( 'invalidcoursemodule', 'mod_throwquestions' ) );
 }
 if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 		'id' => $cm->instance 
 ) )) {
-	print_error ( "error" );
+	print_error ( get_string ( 'error', 'mod_throwquestions' ) );
 }
 
 // Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
-	print_error ( 'error' );
+	print_error ( get_string ( 'error', 'mod_throwquestions' ) );
 }
 
 // URL

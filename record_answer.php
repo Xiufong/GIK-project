@@ -48,13 +48,13 @@ $url = new moodle_url ( '/mod/throwquestions/view.php', array (
 // This corroborates if the answer was correct or wrong, and select the winner of the battle.
 if ($percentage == 1) {
 	$winner = $receiver;
-	$message = 'Yay congrats you have won!';
+	$message = get_string ( 'congratsyouhavewon', 'mod_throwquestions' );
 } elseif ($percentage == - 1) {
 	$winner = $sender;
-	$message = 'Sorry you have lost, get some REVENGE';
+	$message = get_string ( 'sorryyouhavelost', 'mod_throwquestions' );
 } else {
 	// this message is display when the answer that is given wasn't 100% right or -100% wrong in the settings of the question.
-	$message = "The answer of this question doesn't fulfill the parameters";
+	$message = get_string ( 'questionoutofparameters', 'mod_throwquestions' );
 	redirect ( $url, $message, 10 );
 }
 // Parameters that are going to be added or updated, which cointais the results of the battle
@@ -68,7 +68,7 @@ $endbattle = $DB->update_record ( 'battle', $update );
 
 // Validates if the update was correctly executed, if not it will display a message saying "Error".
 if (! $endbattle) {
-	$validation = "Error";
+	$validation = get_string ( 'error', 'mod_throwquestions' );
 	redirect ( $url, $validation, 10 );
 } else {
 	redirect ( $url, $message, 10 );

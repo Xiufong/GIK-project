@@ -102,7 +102,7 @@ function get_all_students($users, $cmid, $sender) {
 		$data [] = array (
 				$user->name . ' ' . $user->last,
 				$userid,
-				$OUTPUT->single_button ( $url, 'Challenge' ) 
+				$OUTPUT->single_button ( $url, get_string ( 'challenge', 'mod_throwquestions' ) ) 
 		);
 	}
 	// Initialize the object table
@@ -111,9 +111,9 @@ function get_all_students($users, $cmid, $sender) {
 	$table->attributes ['style'] = "width: 50%; text-align:center;";
 	// Table Headings
 	$table->head = array (
-			'Students',
-			'ID',
-			'Who do you want to battle?' 
+			get_string ( 'students', 'mod_throwquestions' ),
+			get_string ( 'id', 'mod_throwquestions' ),
+			get_string ( 'whodoyouwanttobattle', 'mod_throwquestions' ) 
 	);
 	// Insert the data in the table
 	$table->data = $data;
@@ -155,7 +155,7 @@ function get_all_the_questions_from_question_bank_table($context, $cmid, $duelis
 			// Prepares the data for the table.
 			$data [] = array (
 					$question->questiontext . ' ' . $question->id,
-					$OUTPUT->single_button ( $url, 'I want this question!' ) 
+					$OUTPUT->single_button ( $url, get_string ( 'iwantthisone', 'mod_throwquestions' ) ) 
 			);
 		}
 	}
@@ -165,8 +165,8 @@ function get_all_the_questions_from_question_bank_table($context, $cmid, $duelis
 	$table->attributes ['style'] = "text-align:center;";
 	// Table Headings
 	$table->head = array (
-			'Question',
-			'Select' 
+			get_string ( 'question', 'mod_throwquestions' ),
+			get_string ( 'select', 'mod_throwquestions' ) 
 	);
 	// Insert the data in the table
 	$table->data = $data;
@@ -220,7 +220,7 @@ function answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid
 							'receiver' => $receiver,
 							'battleid' => $battleid 
 					) );
-					$answered = $OUTPUT->single_button ( $url, 'I want this one!' );
+					$answered = $OUTPUT->single_button ( $url, get_string ( 'iwantthisone', 'mod_throwquestions' ) );
 					// Prepares the data for the table.
 					$data [] = array (
 							$answertext,
@@ -236,14 +236,17 @@ function answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid
 	$table->attributes ['style'] = "text-align:center;";
 	// Table Headings
 	$table->head = array (
-			'Answer',
-			'Select' 
+			get_string ( 'answer', 'mod_throwquestions' ),
+			get_string ( 'select', 'mod_throwquestions' ) 
 	);
 	// Insert the data in the table
 	$table->data = $data;
 	// Render the table in a variable.
 	$answertable = html_writer::table ( $table );
-	$result=array('table'=>$answertable,'question'=>$questiontext);
+	$result = array (
+			'table' => $answertable,
+			'question' => $questiontext 
+	);
 	return $result;
 }
 /**
@@ -292,7 +295,7 @@ function get_all_challenges($sender, $cmid) {
 					$battle->id,
 					$sendernames->firstname . ' ' . $sendernames->lastname,
 					$question->questiontext,
-					$OUTPUT->single_button ( $url, 'Do you wanna answer the question?' ) 
+					$OUTPUT->single_button ( $url, get_string ( 'doyouwanttowanswerthequestion', 'mod_throwquestions' ) ) 
 			);
 		}
 	}
@@ -302,9 +305,9 @@ function get_all_challenges($sender, $cmid) {
 	$table->attributes ['style'] = "text-align:center;";
 	// Table Headings
 	$table->head = array (
-			'Battle ID',
-			'Sender',
-			'Question',
+			get_string ( 'battleid', 'mod_throwquestions' ),
+			get_string ( 'sender', 'mod_throwquestions' ),
+			get_string ( 'question', 'mod_throwquestions' ),
 			'' 
 	);
 	// Insert the data in the table
