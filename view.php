@@ -28,9 +28,10 @@ require_once (dirname ( dirname ( dirname ( __FILE__ ) ) ) . '/config.php'); // 
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB, $USER;
-
+// required parameters in that where passed via url
 $id = required_param ( 'id', PARAM_INT ); // Course module id
-
+                                          
+// Corroborates the Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $id )) {
 	print_error ( "Invalid Course Module" );
 }
@@ -39,36 +40,42 @@ if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 ) )) {
 	print_error ( "error" );
 }
+
+// Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
 	print_error ( 'error' );
 }
 
+// URL
 $url = new moodle_url ( '/mod/throwquestions/questions.php', array (
 		'cmid' => $cm->id 
-) ); // URL
-     
+) );
+
 // context module
 $context = context_module::instance ( $cm->id );
 
 // require login
 require_login ( $course->id );
 
+// Page setup and breadcrumbs
 $PAGE->set_url ( $url );
-// $PAGE->set_context ( $context );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
-$users = throwquestions_get_students ( $course->id,$USER->id);
+// Get all the users in the course.
+$users = throwquestions_get_students ( $course->id, $USER->id );
 
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
+// print the tabtree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'viewlist' );
-
+// Print a table with all the students
 echo get_all_students ( $users, $cm->id, $USER->id );
+
 echo $OUTPUT->footer ();

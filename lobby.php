@@ -32,7 +32,10 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB, $USER;
 
+// required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
+
+// Corroborates Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
 }
@@ -41,6 +44,8 @@ if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 ) )) {
 	print_error ( "error" );
 }
+
+// Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
@@ -49,25 +54,33 @@ if (! $course = $DB->get_record ( 'course', array (
 // context module
 $context = context_module::instance ( $cm->id );
 
+// course id
 $id = $course->id;
+
 // require login
 require_login ( $id );
 
+// context of the course
 $contextcourse = context_course::instance ( $id );
+
+// URL
 $url = new moodle_url ( '/mod/throwquestions/lobby.php', array (
 		'cmid' => $cmid 
 ) );
+
+// Page setup and breadcrumbs
 $PAGE->set_url ( $url );
-// $PAGE->set_context ( $context );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
+
 /* ----------VIEW---------- */
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
+// Print the tab tree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'check' );
-
-echo get_all_challenges($USER->id,$cmid);
+// Print a table with all the pending battles.
+echo get_all_challenges ( $USER->id, $cmid );
 
 echo $OUTPUT->footer ();

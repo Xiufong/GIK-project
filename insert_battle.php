@@ -32,21 +32,27 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB;
 
+// Required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
 $questionid = required_param ( 'qid', PARAM_INT );
 $sender = required_param ( 'sender', PARAM_INT );
 $oponent = required_param ( 'oponent', PARAM_INT );
 $status = required_param ( 'status', PARAM_INT );
+
+// Insert fields that are going to be added to the database.
 $insert = array (
 		'question' => $questionid,
 		'sender_id' => $sender,
 		'receiver_id' => $oponent,
-		'status' => $status
+		'status' => $status 
 );
+// URL where the redirection is going to be targeted.
 $url = new moodle_url ( '/mod/throwquestions/view.php', array (
 		'id' => $cmid 
 ) );
-$newbattle = $DB-> insert_record ( 'battle', $insert );
+$newbattle = $DB->insert_record ( 'battle', $insert );
+
+// Validates if the insertion was executed correctly, if it wasn't it will display a message.
 if (! $newbattle) {
 	$validation = "Error: Sorry Bro, your battle couldn't be done";
 	redirect ( $url, $validation, 10 );

@@ -32,6 +32,7 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB;
 
+// Required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
 $questionid = required_param ( 'qid', PARAM_INT );
 $sender = required_param ( 'sender', PARAM_INT );
@@ -39,9 +40,12 @@ $receiver = required_param ( 'receiver', PARAM_INT );
 $battleid = required_param ( 'battleid', PARAM_INT );
 $answerid = required_param ( 'answerid', PARAM_INT );
 $percentage = required_param ( 'percentage', PARAM_INT );
+
+// URL where the redirection is going to be targeted.
 $url = new moodle_url ( '/mod/throwquestions/view.php', array (
 		'id' => $cmid 
 ) );
+// This corroborates if the answer was correct or wrong, and select the winner of the battle.
 if ($percentage == 1) {
 	$winner = $receiver;
 	$message = 'Yay congrats you have won!';
@@ -49,9 +53,11 @@ if ($percentage == 1) {
 	$winner = $sender;
 	$message = 'Sorry you have lost, get some REVENGE';
 } else {
+	// this message is display when the answer that is given wasn't 100% right or -100% wrong in the settings of the question.
 	$message = "The answer of this question doesn't fulfill the parameters";
 	redirect ( $url, $message, 10 );
 }
+// Parameters that are going to be added or updated, which cointais the results of the battle
 $update = array (
 		'id' => $battleid,
 		'status' => 1,
@@ -60,11 +66,12 @@ $update = array (
 );
 $endbattle = $DB->update_record ( 'battle', $update );
 
+// Validates if the update was correctly executed, if not it will display a message saying "Error".
 if (! $endbattle) {
 	$validation = "Error";
-	redirect($url,$validation,10);
-}else {
-	redirect($url,$message,10);
+	redirect ( $url, $validation, 10 );
+} else {
+	redirect ( $url, $message, 10 );
 }
 
 

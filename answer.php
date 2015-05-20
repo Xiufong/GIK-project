@@ -31,12 +31,14 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB;
 
+// required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
 $questionid = required_param ( 'qid', PARAM_INT );
-$sender=required_param ( 'sender', PARAM_INT );
-$receiver=required_param ( 'receiver', PARAM_INT );
-$battleid=required_param ( 'battleid', PARAM_INT );
+$sender = required_param ( 'sender', PARAM_INT );
+$receiver = required_param ( 'receiver', PARAM_INT );
+$battleid = required_param ( 'battleid', PARAM_INT );
 
+// Corroborates Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
 }
@@ -45,6 +47,8 @@ if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 ) )) {
 	print_error ( "error" );
 }
+
+// Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
@@ -53,26 +57,37 @@ if (! $course = $DB->get_record ( 'course', array (
 // context module
 $context = context_module::instance ( $cm->id );
 
+// course id
 $id = $course->id;
+
 // require login
 require_login ( $id );
 
+// context of the course
 $contextcourse = context_course::instance ( $id );
 
+// URL
 $url = new moodle_url ( '/mod/throwquestions/answer.php', array (
 		'cmid' => $cm->id 
 ) );
+
+// Page setup and breadcrumbs
 $PAGE->set_url ( $url );
-// $PAGE->set_context ( $context );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
+
+// get the all the info from the function in a variable
+$answerfromthequestion = answer_menu ( $contextcourse->id, $cm->id, $questionid, $sender, $receiver, $battleid );
+
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-// print table
-echo answer_menu ( $contextcourse->id, $cm->id,$questionid,$sender,$receiver,$battleid );
+// Print the question before the table.
+echo $OUTPUT->heading ( $answerfromthequestion ['question'] );
+// Print a table with all the answers.
+echo $answerfromthequestion ['table'];
 
 echo $OUTPUT->footer ();

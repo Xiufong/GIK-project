@@ -31,10 +31,12 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 
 global $PAGE, $CFG, $OUTPUT, $DB;
 
+// required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
 $oponent = required_param ( 'oponentid', PARAM_INT );
 $sender = required_param ( 'sender', PARAM_INT );
 
+// Corroborates Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
 }
@@ -43,6 +45,8 @@ if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 ) )) {
 	print_error ( "error" );
 }
+
+// Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
@@ -51,22 +55,28 @@ if (! $course = $DB->get_record ( 'course', array (
 // context module
 $context = context_module::instance ( $cm->id );
 
+// course id
 $id = $course->id;
+
 // require login
 require_login ( $id );
 
+// context of the course
 $contextcourse = context_course::instance ( $id );
+
+// URL
 $url = new moodle_url ( '/mod/throwquestions/questions.php', array (
 		'cmid' => $cmid,
 		'sender' => $sender,
 		'oponent' => $oponent 
 ) );
+// Page setup and breadcrumbs
 $PAGE->set_url ( $url );
-// $PAGE->set_context ( $context );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
+// Variable that conteins the sender and the receiver of the question.
 $duelists = array (
 		'sender' => $sender,
 		'oponent' => $oponent 
@@ -76,7 +86,8 @@ $duelists = array (
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-// print table
+
+// print table with all the questions to be selected
 echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
 
 echo $OUTPUT->footer ();

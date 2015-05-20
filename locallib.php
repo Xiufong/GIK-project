@@ -27,6 +27,34 @@
 defined ( 'MOODLE_INTERNAL' ) || die ();
 
 /**
+ * This function gets a navigation tab.
+ *
+ * @param int $cmid        	
+ * @param int $courseid        	
+ * @param text $sesskey        	
+ * @param obj $context        	
+ * @return multitype:tabobject
+ */
+function option_tab($cmid, $courseid, $sesskey, $context) {
+	global $PAGE, $CFG, $OUTPUT, $DB;
+	
+	$tabs = array ();
+	// Initialize the object tab.
+	$tab = new tabobject ( 'list', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Throwquestions' );
+	// First sub tree called viewlist.
+	$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
+	// Check if has capability to create questions.
+	if (has_capability ( 'moodle/question:add', $context )) {
+		// Second subtree that will be only show to the users with the capability to add question.
+		$tab->subtree [] = new tabobject ( 'create', $CFG->wwwroot . "/question/question.php?category=&courseid={$courseid}&sesskey={$sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$courseid}&category=1", 'Create Question' );
+	}
+	// Third subtree that will show the pending battles of the user.
+	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
+	// saves all the tabs in a variable.
+	$tabs [] = $tab;
+	return $tabs;
+}
+/**
  * Function to get all the students in the course.
  *
  * @param int $courseid        	
@@ -34,7 +62,7 @@ defined ( 'MOODLE_INTERNAL' ) || die ();
  */
 function throwquestions_get_students($courseid, $user) {
 	global $DB;
-	
+	// Query to get all the students from the course, except from the current user.
 	$query = 'SELECT u.id, u.idnumber, u.firstname as name, u.lastname as last, e.enrol
 			FROM {user_enrolments} ue
 			JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = ?)
@@ -43,7 +71,7 @@ function throwquestions_get_students($courseid, $user) {
 			JOIN {user} u ON (ue.userid = u.id) and (u.id!=?)
 			ORDER BY lastname ASC';
 	
-	// Se toman los resultados del query dentro de una variable.
+	// Takes all the data from the query and saves it in a variable
 	$rs = $DB->get_recordset_sql ( $query, array (
 			$courseid,
 			$user 
@@ -62,6 +90,7 @@ function get_all_students($users, $cmid, $sender) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
 	$data = '';
+	// Run the object $users to get the information to display the table
 	foreach ( $users as $user ) {
 		$userid = $user->id;
 		$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
@@ -69,21 +98,26 @@ function get_all_students($users, $cmid, $sender) {
 				'oponentid' => $userid,
 				'sender' => $sender 
 		) );
+		// Prepares the data for the table.
 		$data [] = array (
 				$user->name . ' ' . $user->last,
 				$userid,
 				$OUTPUT->single_button ( $url, 'Challenge' ) 
 		);
 	}
+	// Initialize the object table
 	$table = new html_table ();
+	// Creates the atributes
 	$table->attributes ['style'] = "width: 50%; text-align:center;";
+	// Table Headings
 	$table->head = array (
 			'Students',
 			'ID',
 			'Who do you want to battle?' 
 	);
+	// Insert the data in the table
 	$table->data = $data;
-	
+	// Render the table in a variable.
 	$userstable = html_writer::table ( $table );
 	return $userstable;
 }
@@ -98,16 +132,19 @@ function get_all_students($users, $cmid, $sender) {
 function get_all_the_questions_from_question_bank_table($context, $cmid, $duelists) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
+	// Get all the categories from the course context
 	$categories = get_categories_for_contexts ( $context, 'name ASC' );
 	
 	$data = '';
 	
 	foreach ( $categories as $category ) {
+		// Gets all the questions from the category
 		$questions = $DB->get_records ( 'question', array (
 				'category' => $category->id,
 				'qtype' => 'multichoice' 
 		) );
 		foreach ( $questions as $question ) {
+			// Sets a new url to be run in the single button.
 			$url = new moodle_url ( '/mod/throwquestions/insert_battle.php', array (
 					'id' => $cmid,
 					'qid' => $question->id,
@@ -115,45 +152,28 @@ function get_all_the_questions_from_question_bank_table($context, $cmid, $duelis
 					'oponent' => $duelists ['oponent'],
 					'status' => 0 
 			) );
+			// Prepares the data for the table.
 			$data [] = array (
 					$question->questiontext . ' ' . $question->id,
 					$OUTPUT->single_button ( $url, 'I want this question!' ) 
 			);
 		}
 	}
+	// Initialize the object table
 	$table = new html_table ();
+	// Creates the atributes
 	$table->attributes ['style'] = "text-align:center;";
+	// Table Headings
 	$table->head = array (
 			'Question',
 			'Select' 
 	);
+	// Insert the data in the table
 	$table->data = $data;
+	// Render the table in a variable.
 	$questiontable = html_writer::table ( $table );
 	
 	return $questiontable;
-}
-/**
- * This function gets a navigation tab.
- *
- * @param int $cmid        	
- * @param int $courseid        	
- * @param text $sesskey        	
- * @param obj $context        	
- * @return multitype:tabobject
- */
-function option_tab($cmid, $courseid, $sesskey, $context) {
-	global $PAGE, $CFG, $OUTPUT, $DB;
-	
-	$tabs = array ();
-	$tab = new tabobject ( 'list', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Throwquestions' );
-	$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
-	// check if has capability to create questions
-	if (has_capability ( 'moodle/question:add', $context )) {
-		$tab->subtree [] = new tabobject ( 'create', $CFG->wwwroot . "/question/question.php?category=&courseid={$courseid}&sesskey={$sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$courseid}&category=1", 'Create Question' );
-	}
-	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
-	$tabs [] = $tab;
-	return $tabs;
 }
 /**
  * Function to get the answer menu
@@ -163,10 +183,8 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
  * @param int $questionid        	
  * @return table with all the posible answer for the question
  */
-function answer_menu($context, $cmid, $questionid,$sender,$receiver,$battleid) {
+function answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
-	
-	$iscorrect = optional_param ( 'result', 0, PARAM_INT );
 	
 	// get all the categories from the course.
 	$categories = get_categories_for_contexts ( $context, 'name ASC' );
@@ -198,11 +216,12 @@ function answer_menu($context, $cmid, $questionid,$sender,$receiver,$battleid) {
 							'qid' => $questionid,
 							'answerid' => $answerid,
 							'percentage' => $percentage,
-							'sender'=>$sender,
-							'receiver'=>$receiver,
-							'battleid'=>$battleid
+							'sender' => $sender,
+							'receiver' => $receiver,
+							'battleid' => $battleid 
 					) );
-					$answered = $OUTPUT->single_button ( $url, 'I want this one!' );					
+					$answered = $OUTPUT->single_button ( $url, 'I want this one!' );
+					// Prepares the data for the table.
 					$data [] = array (
 							$answertext,
 							$answered 
@@ -211,42 +230,56 @@ function answer_menu($context, $cmid, $questionid,$sender,$receiver,$battleid) {
 			}
 		}
 	}
-	echo '<h1>' . $questiontext . '</h1>';
+	// Initialize the object table
 	$table = new html_table ();
+	// Creates the atributes
 	$table->attributes ['style'] = "text-align:center;";
+	// Table Headings
 	$table->head = array (
 			'Answer',
 			'Select' 
 	);
+	// Insert the data in the table
 	$table->data = $data;
+	// Render the table in a variable.
 	$answertable = html_writer::table ( $table );
-	
-	return $answertable;
+	$result=array('table'=>$answertable,'question'=>$questiontext);
+	return $result;
 }
+/**
+ * This functions get all the pending battles and displays it in a table
+ *
+ * @param int $sender        	
+ * @param int $cmid        	
+ * @return A table with all the pending battles
+ */
 function get_all_challenges($sender, $cmid) {
 	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
-	
+	// Sets the parameters to search the battles pending
 	$param = array (
 			'receiver_id' => $sender,
 			'status' => 0 
 	);
-	
+	// Get all the pending battles in a variable
 	$battles = $DB->get_records ( 'battle', $param );
-	
+	// Get the user(receiver) name.
 	$receivername = $USER->firstname . ' ' . $USER->lastname;
-	$getreceiversnameqry = "SELECT firstname,lastname
+	// Query to get the senders name.
+	$getsendersnameqry = "SELECT firstname,lastname
 								FROM {user} as u
 								WHERE u.id=?";
 	$data = '';
 	foreach ( $battles as $battle ) {
-		$sendername = $DB->get_records_sql ( $getreceiversnameqry, array (
+		// Get all the senders for each battle.
+		$sendername = $DB->get_records_sql ( $getsendersnameqry, array (
 				$battle->sender_id 
 		) );
-		
+		// Get the question from the battle
 		$question = $DB->get_record ( 'question', array (
 				'id' => $battle->question 
 		) );
 		foreach ( $sendername as $sendernames ) {
+			// Sets the redirection URL for the button
 			$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
 					'id' => $cmid,
 					'battleid' => $battle->id,
@@ -254,6 +287,7 @@ function get_all_challenges($sender, $cmid) {
 					'sender' => $battle->sender_id,
 					'receiver' => $USER->id 
 			) );
+			// Prepares the data for the table.
 			$data [] = array (
 					$battle->id,
 					$sendernames->firstname . ' ' . $sendernames->lastname,
@@ -262,15 +296,20 @@ function get_all_challenges($sender, $cmid) {
 			);
 		}
 	}
+	// Initialize the object table
 	$table = new html_table ();
+	// Creates the atributes
 	$table->attributes ['style'] = "text-align:center;";
+	// Table Headings
 	$table->head = array (
 			'Battle ID',
 			'Sender',
 			'Question',
 			'' 
 	);
+	// Insert the data in the table
 	$table->data = $data;
+	// Render the table in a variable.
 	$battletable = html_writer::table ( $table );
 	return $battletable;
 }
