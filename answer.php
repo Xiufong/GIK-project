@@ -33,6 +33,9 @@ global $PAGE, $CFG, $OUTPUT, $DB;
 
 $cmid = required_param ( 'id', PARAM_INT );
 $questionid = required_param ( 'qid', PARAM_INT );
+$sender=required_param ( 'sender', PARAM_INT );
+$receiver=required_param ( 'receiver', PARAM_INT );
+$battleid=required_param ( 'battleid', PARAM_INT );
 
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
@@ -70,6 +73,6 @@ $PAGE->set_pagelayout ( 'standard' );
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print table
-echo answer_menu ( $contextcourse->id, $cm->id,$questionid );
+echo answer_menu ( $contextcourse->id, $cm->id,$questionid,$sender,$receiver,$battleid );
 
 echo $OUTPUT->footer ();

@@ -27,7 +27,7 @@
 require_once (dirname ( dirname ( dirname ( __FILE__ ) ) ) . '/config.php'); // Required
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
 
-global $PAGE, $CFG, $OUTPUT, $DB,$USER;
+global $PAGE, $CFG, $OUTPUT, $DB, $USER;
 
 $id = required_param ( 'id', PARAM_INT ); // Course module id
 
@@ -62,13 +62,13 @@ $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
-$users = throwquestions_get_students ( $course->id );
+$users = throwquestions_get_students ( $course->id,$USER->id);
 
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-echo $OUTPUT->tabtree ( option_tab($cm->id,$course->id,$USER->sesskey,$context),'viewlist');
+echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'viewlist' );
 
-echo get_all_students ( $users, $cm->id);
+echo get_all_students ( $users, $cm->id, $USER->id );
 echo $OUTPUT->footer ();

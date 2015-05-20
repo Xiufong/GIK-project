@@ -32,7 +32,7 @@ defined ( 'MOODLE_INTERNAL' ) || die ();
  * @param int $courseid        	
  * @return An object with all the students
  */
-function throwquestions_get_students($courseid) {
+function throwquestions_get_students($courseid, $user) {
 	global $DB;
 	
 	$query = 'SELECT u.id, u.idnumber, u.firstname as name, u.lastname as last, e.enrol
@@ -40,12 +40,13 @@ function throwquestions_get_students($courseid) {
 			JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = ?)
 			JOIN {context} c ON (c.contextlevel = 50 AND c.instanceid = e.courseid)
 			JOIN {role_assignments} ra ON (ra.contextid = c.id AND ra.roleid = 5 AND ra.userid = ue.userid)
-			JOIN {user} u ON (ue.userid = u.id)
+			JOIN {user} u ON (ue.userid = u.id) and (u.id!=?)
 			ORDER BY lastname ASC';
 	
 	// Se toman los resultados del query dentro de una variable.
 	$rs = $DB->get_recordset_sql ( $query, array (
-			$courseid 
+			$courseid,
+			$user 
 	) );
 	
 	return $rs;
@@ -57,7 +58,7 @@ function throwquestions_get_students($courseid) {
  * @param int $cmid        	
  * @return Table with all the students and a button to challenge.
  */
-function get_all_students($users, $cmid) {
+function get_all_students($users, $cmid, $sender) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
 	$data = '';
@@ -65,7 +66,8 @@ function get_all_students($users, $cmid) {
 		$userid = $user->id;
 		$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
 				'id' => $cmid,
-				'user' => $userid 
+				'oponentid' => $userid,
+				'sender' => $sender 
 		) );
 		$data [] = array (
 				$user->name . ' ' . $user->last,
@@ -89,9 +91,11 @@ function get_all_students($users, $cmid) {
  * This function get a table with all the question from que question bank in the course.
  *
  * @param int $context        	
+ * @param int $cmid        	
+ * @param array $duelists        	
  * @return A table with all the multi choice questions from the question bank
  */
-function get_all_the_questions_from_question_bank_table($context, $cmid) {
+function get_all_the_questions_from_question_bank_table($context, $cmid, $duelists) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
 	$categories = get_categories_for_contexts ( $context, 'name ASC' );
@@ -104,9 +108,12 @@ function get_all_the_questions_from_question_bank_table($context, $cmid) {
 				'qtype' => 'multichoice' 
 		) );
 		foreach ( $questions as $question ) {
-			$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+			$url = new moodle_url ( '/mod/throwquestions/insert_battle.php', array (
 					'id' => $cmid,
-					'qid' => $question->id 
+					'qid' => $question->id,
+					'sender' => $duelists ['sender'],
+					'oponent' => $duelists ['oponent'],
+					'status' => 0 
 			) );
 			$data [] = array (
 					$question->questiontext . ' ' . $question->id,
@@ -144,11 +151,19 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
 	if (has_capability ( 'moodle/question:add', $context )) {
 		$tab->subtree [] = new tabobject ( 'create', $CFG->wwwroot . "/question/question.php?category=&courseid={$courseid}&sesskey={$sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$courseid}&category=1", 'Create Question' );
 	}
-	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Check' );
+	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
 	$tabs [] = $tab;
 	return $tabs;
 }
-function answer_menu($context, $cmid, $questionid) {
+/**
+ * Function to get the answer menu
+ *
+ * @param obj $context        	
+ * @param int $cmid        	
+ * @param int $questionid        	
+ * @return table with all the posible answer for the question
+ */
+function answer_menu($context, $cmid, $questionid,$sender,$receiver,$battleid) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
 	$iscorrect = optional_param ( 'result', 0, PARAM_INT );
@@ -177,32 +192,17 @@ function answer_menu($context, $cmid, $questionid) {
 					$answerid = $answer->id;
 					$answertext = $answer->answer;
 					$percentage = $answer->fraction;
-					if ($percentage == 1) {
-						$result = 1;
-					} elseif ($percentage == - 1) {
-						$result = 2;
-					} else {
-						echo 'Error';
-						die ();
-					}
 					// url to redirect the button.
-					$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+					$url = new moodle_url ( '/mod/throwquestions/record_answer.php', array (
 							'id' => $cmid,
-							'result' => $result, 
-							'qid'=>$questionid,
-							'answerid'=>$answerid
-					) )
-					;
-					if ($iscorrect == 0) {
-						$answered = $OUTPUT->single_button ( $url, 'I want this one!' );
-						$fromcorrectfilter = '';
-					} elseif ($iscorrect == 1) {
-						$answered = 'Already Answered';
-						$fromcorrectfilter = 'Correct';
-					} elseif ($iscorrect == 2) {
-						$answered = 'Already Answered';
-						$fromcorrectfilter = 'Incorrect';
-					}
+							'qid' => $questionid,
+							'answerid' => $answerid,
+							'percentage' => $percentage,
+							'sender'=>$sender,
+							'receiver'=>$receiver,
+							'battleid'=>$battleid
+					) );
+					$answered = $OUTPUT->single_button ( $url, 'I want this one!' );					
 					$data [] = array (
 							$answertext,
 							$answered 
@@ -220,7 +220,63 @@ function answer_menu($context, $cmid, $questionid) {
 	);
 	$table->data = $data;
 	$answertable = html_writer::table ( $table );
-	echo '<h1>' . $fromcorrectfilter . '</h1>';
 	
 	return $answertable;
 }
+function get_all_challenges($sender, $cmid) {
+	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
+	
+	$param = array (
+			'receiver_id' => $sender,
+			'status' => 0 
+	);
+	
+	$battles = $DB->get_records ( 'battle', $param );
+	
+	$receivername = $USER->firstname . ' ' . $USER->lastname;
+	$getreceiversnameqry = "SELECT firstname,lastname
+								FROM {user} as u
+								WHERE u.id=?";
+	$data = '';
+	foreach ( $battles as $battle ) {
+		$sendername = $DB->get_records_sql ( $getreceiversnameqry, array (
+				$battle->sender_id 
+		) );
+		
+		$question = $DB->get_record ( 'question', array (
+				'id' => $battle->question 
+		) );
+		foreach ( $sendername as $sendernames ) {
+			$url = new moodle_url ( '/mod/throwquestions/answer.php', array (
+					'id' => $cmid,
+					'battleid' => $battle->id,
+					'qid' => $question->id,
+					'sender' => $battle->sender_id,
+					'receiver' => $USER->id 
+			) );
+			$data [] = array (
+					$battle->id,
+					$sendernames->firstname . ' ' . $sendernames->lastname,
+					$question->questiontext,
+					$OUTPUT->single_button ( $url, 'Do you wanna answer the question?' ) 
+			);
+		}
+	}
+	$table = new html_table ();
+	$table->attributes ['style'] = "text-align:center;";
+	$table->head = array (
+			'Battle ID',
+			'Sender',
+			'Question',
+			'' 
+	);
+	$table->data = $data;
+	$battletable = html_writer::table ( $table );
+	return $battletable;
+}
+
+
+
+
+
+

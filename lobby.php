@@ -24,17 +24,15 @@
  * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *         
+ *         
  */
 require_once ('../../config.php');
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
 require_once ($CFG->dirroot . "/lib/questionlib.php");
 
-global $PAGE, $CFG, $OUTPUT, $DB;
+global $PAGE, $CFG, $OUTPUT, $DB, $USER;
 
 $cmid = required_param ( 'id', PARAM_INT );
-$oponent = required_param ( 'oponentid', PARAM_INT );
-$sender = required_param ( 'sender', PARAM_INT );
-
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
 	print_error ( "Invalid Course Module" );
 }
@@ -56,10 +54,8 @@ $id = $course->id;
 require_login ( $id );
 
 $contextcourse = context_course::instance ( $id );
-$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
-		'cmid' => $cmid,
-		'sender' => $sender,
-		'oponent' => $oponent 
+$url = new moodle_url ( '/mod/throwquestions/lobby.php', array (
+		'cmid' => $cmid 
 ) );
 $PAGE->set_url ( $url );
 // $PAGE->set_context ( $context );
@@ -67,16 +63,11 @@ $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
-$duelists = array (
-		'sender' => $sender,
-		'oponent' => $oponent 
-);
-
 /* ----------VIEW---------- */
-
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-// print table
-echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
+echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'check' );
+
+echo get_all_challenges($USER->id,$cmid);
 
 echo $OUTPUT->footer ();

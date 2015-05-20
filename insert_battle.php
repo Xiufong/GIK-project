@@ -24,6 +24,7 @@
  * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *         
+ *         
  */
 require_once ('../../config.php');
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
@@ -32,51 +33,24 @@ require_once ($CFG->dirroot . "/lib/questionlib.php");
 global $PAGE, $CFG, $OUTPUT, $DB;
 
 $cmid = required_param ( 'id', PARAM_INT );
-$oponent = required_param ( 'oponentid', PARAM_INT );
+$questionid = required_param ( 'qid', PARAM_INT );
 $sender = required_param ( 'sender', PARAM_INT );
-
-if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
-	print_error ( "Invalid Course Module" );
-}
-if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
-		'id' => $cm->instance 
-) )) {
-	print_error ( "error" );
-}
-if (! $course = $DB->get_record ( 'course', array (
-		'id' => $throwquestion->course 
-) )) {
-	print_error ( 'error' );
-}
-// context module
-$context = context_module::instance ( $cm->id );
-
-$id = $course->id;
-// require login
-require_login ( $id );
-
-$contextcourse = context_course::instance ( $id );
-$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
-		'cmid' => $cmid,
-		'sender' => $sender,
-		'oponent' => $oponent 
-) );
-$PAGE->set_url ( $url );
-// $PAGE->set_context ( $context );
-$PAGE->set_course ( $course );
-$PAGE->set_heading ( $course->fullname );
-$PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-$PAGE->set_pagelayout ( 'standard' );
-$duelists = array (
-		'sender' => $sender,
-		'oponent' => $oponent 
+$oponent = required_param ( 'oponent', PARAM_INT );
+$status = required_param ( 'status', PARAM_INT );
+$insert = array (
+		'question' => $questionid,
+		'sender_id' => $sender,
+		'receiver_id' => $oponent,
+		'status' => $status
 );
-
-/* ----------VIEW---------- */
-
-echo $OUTPUT->header ();
-echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-// print table
-echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
-
-echo $OUTPUT->footer ();
+$url = new moodle_url ( '/mod/throwquestions/view.php', array (
+		'id' => $cmid 
+) );
+$newbattle = $DB-> insert_record ( 'battle', $insert );
+if (! $newbattle) {
+	$validation = "Error: Sorry Bro, your battle couldn't be done";
+	redirect ( $url, $validation, 10 );
+} else {
+	$validation = "Yay! Congrats you have started a WAR";
+	redirect ( $url, $validation, 10 );
+}
