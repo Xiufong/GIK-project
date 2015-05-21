@@ -18,7 +18,7 @@
         <FIELD NAME="sender_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="sender id"/>
         <FIELD NAME="receiver_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="receiver id"/>
         <FIELD NAME="question" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="question"/>
-        <FIELD NAME="status" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="State of the battle 1 if ended 0 if pending"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="State of the battle 1 if ended 0 if pending"/>
         <FIELD NAME="winner" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="answer" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="answer"/>
       </FIELDS>

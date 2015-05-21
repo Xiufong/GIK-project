@@ -79,7 +79,7 @@ function xmldb_throwquestions_upgrade($oldversion) {
         $table->add_field('sender_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
         $table->add_field('receiver_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
         $table->add_field('question', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('status', XMLDB_TYPE_BINARY, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTERGER, '1', null, XMLDB_NOTNULL, null, null);
         $table->add_field('winner', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
         $table->add_field('answer', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
 
