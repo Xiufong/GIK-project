@@ -62,18 +62,23 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
  */
 function throwquestions_get_students($courseid, $user) {
 	global $DB;
-	// Query to get all the students from the course, except from the current user.
+	// Query to get all the students from the course, except from the current user, and the users that are in a battle.
 	$query = 'SELECT u.id, u.idnumber, u.firstname as name, u.lastname as last, e.enrol
 			FROM {user_enrolments} ue
 			JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = ?)
 			JOIN {context} c ON (c.contextlevel = 50 AND c.instanceid = e.courseid)
 			JOIN {role_assignments} ra ON (ra.contextid = c.id AND ra.roleid = 5 AND ra.userid = ue.userid)
 			JOIN {user} u ON (ue.userid = u.id) and (u.id!=?)
-			ORDER BY lastname ASC';
+			WHERE u.id NOT IN(	SELECT receiver_id 
+								FROM {battle} 
+								WHERE status=? AND sender_id=?)
+			ORDER BY id ASC';
 	
 	// Takes all the data from the query and saves it in a variable
 	$rs = $DB->get_recordset_sql ( $query, array (
 			$courseid,
+			$user,
+			0,
 			$user 
 	) );
 	
@@ -91,6 +96,7 @@ function get_all_students($users, $cmid, $sender) {
 	
 	$data = '';
 	// Run the object $users to get the information to display the table
+	$i = 0;
 	foreach ( $users as $user ) {
 		$userid = $user->id;
 		$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
