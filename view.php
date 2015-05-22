@@ -49,8 +49,8 @@ if (! $course = $DB->get_record ( 'course', array (
 }
 
 // URL
-$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
-		'cmid' => $cm->id 
+$url = new moodle_url ( '/mod/throwquestions/view.php', array (
+		'id' => $cm->id 
 ) );
 
 // context module
@@ -67,7 +67,7 @@ $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
 // Get all the users in the course.
-$users = throwquestions_get_students ( $course->id, $USER->id );
+$users = throwquestions_get_students_that_can_fight ( $course->id, $USER->id, $cm->id );
 
 /* ----------VIEW---------- */
 
@@ -75,7 +75,13 @@ echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print the tabtree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'viewlist' );
-// Print a table with all the students
-echo get_all_students ( $users, $cm->id, $USER->id );
 
+if (has_capability ( 'mod/throwquestions:battleground', $context )) {
+	echo get_battleground ($cm->id);
+} elseif (has_capability ( 'mod/throwquestions:canfight', $context )) {
+	// Print a table with all the students
+	echo get_all_students ( $users, $cm->id, $USER->id );
+} else {
+	echo "Sorry, You don't have any capabilities";
+}
 echo $OUTPUT->footer ();

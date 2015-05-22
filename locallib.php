@@ -42,14 +42,20 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
 	// Initialize the object tab.
 	$tab = new tabobject ( 'list', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Throwquestions' );
 	// First sub tree called viewlist.
-	$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
+	if (has_capability ( 'mod/throwquestions:canfight', $context )) {
+		$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
+	} else {
+		$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Battleground' );
+	}
 	// Check if has capability to create questions.
 	if (has_capability ( 'moodle/question:add', $context )) {
 		// Second subtree that will be only show to the users with the capability to add question.
 		$tab->subtree [] = new tabobject ( 'create', $CFG->wwwroot . "/question/question.php?category=&courseid={$courseid}&sesskey={$sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$courseid}&category=1", 'Create Question' );
 	}
 	// Third subtree that will show the pending battles of the user.
-	$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
+	if (has_capability ( 'mod/throwquestions:canfight', $context )) {
+		$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
+	}
 	// saves all the tabs in a variable.
 	$tabs [] = $tab;
 	return $tabs;
@@ -60,7 +66,7 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
  * @param int $courseid        	
  * @return An object with all the students
  */
-function throwquestions_get_students($courseid, $user) {
+function throwquestions_get_students_that_can_fight($courseid, $user, $cmid) {
 	global $DB;
 	// Query to get all the students from the course, except from the current user, and the users that are in a battle.
 	$query = 'SELECT u.id, u.idnumber, u.firstname as name, u.lastname as last, e.enrol
@@ -69,9 +75,9 @@ function throwquestions_get_students($courseid, $user) {
 			JOIN {context} c ON (c.contextlevel = 50 AND c.instanceid = e.courseid)
 			JOIN {role_assignments} ra ON (ra.contextid = c.id AND ra.roleid = 5 AND ra.userid = ue.userid)
 			JOIN {user} u ON (ue.userid = u.id) and (u.id!=?)
-			WHERE u.id NOT IN(	SELECT receiver_id 
-								FROM {battle} 
-								WHERE status=? AND sender_id=?)
+			WHERE u.id NOT IN(	SELECT b.receiver_id 
+								FROM {battle} b
+								WHERE b.status=? AND b.sender_id=? and b.cm_id=?)
 			ORDER BY id ASC';
 	
 	// Takes all the data from the query and saves it in a variable
@@ -79,7 +85,8 @@ function throwquestions_get_students($courseid, $user) {
 			$courseid,
 			$user,
 			0,
-			$user 
+			$user,
+			$cmid 
 	) );
 	
 	return $rs;
@@ -322,7 +329,71 @@ function get_all_challenges($sender, $cmid) {
 	$battletable = html_writer::table ( $table );
 	return $battletable;
 }
-
+function get_battleground($cmid) {
+	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
+	$getbattleswithnameqry = "	SELECT b.id,r.receiversname, r.receiverslastname, s.sendersname, s.senderslastname, qu.question, b.winner, b.status, w.winnersfirstname,w.winnerslastname
+								FROM {battle} AS b
+								JOIN (	SELECT b.receiver_id AS receiverid,u.firstname AS receiversname,u.lastname AS receiverslastname
+										FROM {user} AS u
+										JOIN {battle} AS b ON (b.receiver_id=u.id)
+									) AS r ON (b.receiver_id=r.receiverid)
+								JOIN(	SELECT b.sender_id AS senderid,u.firstname AS sendersname,u.lastname AS senderslastname
+										FROM {user} AS u
+										JOIN {battle} AS b ON (b.sender_id=u.id)
+									)AS s ON (b.sender_id=s.senderid)
+								JOIN(	SELECT questiontext AS question,q.id
+										FROM {question} q
+										JOIN {battle} b ON (b.id=q.id)
+									)AS qu ON(qu.id=b.question)
+								LEFT JOIN(	SELECT u.firstname AS winnersfirstname, u.lastname as winnerslastname,b.winner
+											FROM {user} u
+											JOIN {battle} b ON(b.winner=u.id)
+     									  ) AS w ON (w.winner=b.winner) 
+								WHERE b.cm_id=?
+								GROUP BY b.id
+								ORDER BY b.status desc";
+	$battles = $DB->get_records_sql ( $getbattleswithnameqry, array (
+			$cmid 
+	) );
+	$data = '';
+	foreach ( $battles as $battle ) {
+		if ($battle->status == 0) {
+			$status = 'Battle in Progress';
+		} else {
+			$status = 'Battle Finished';
+		}
+		if ($battle->winner == null) {
+			$winner = '--';
+		} else {
+			$winner = $battle->winnersfirstname . ' ' . $battle->winnerslastname;
+		}
+		
+		$data [] = array (
+				$battle->sendersname . ' ' . $battle->senderslastname,
+				$battle->receiversname . ' ' . $battle->receiversname,
+				$battle->question,
+				$status,
+				$winner 
+		);
+	}
+	// Initialize the object table
+	$table = new html_table ();
+	// Creates the atributes
+	$table->attributes ['style'] = "text-align:center;";
+	// Table Headings
+	$table->head = array (
+			get_string ( 'sender', 'mod_throwquestions' ),
+			get_string ( 'receiver', 'mod_throwquestions' ),
+			get_string ( 'question', 'mod_throwquestions' ),
+			get_string ( 'status', 'mod_throwquestions' ),
+			get_string ( 'winner', 'mod_throwquestions' ) 
+	);
+	// Insert the data in the table
+	$table->data = $data;
+	// Render the table in a variable.
+	$battleground = html_writer::table ( $table );
+	return $battleground;
+}
 
 
 

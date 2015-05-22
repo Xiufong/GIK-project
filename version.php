@@ -27,5 +27,5 @@
 defined ( 'MOODLE_INTERNAL' ) || die ();
 $plugin->pluginname='mod_throwquestions';
 $plugin->component = 'mod_throwquestions';
-$plugin->version = 2015050604;
+$plugin->version = 2015052201;
 

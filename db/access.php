@@ -80,13 +80,25 @@ $capabilities = array (
 		),
 		'mod/throwquestions:canfight' => array (
 				'captype' => 'read',
-				'contextlevel' =>CONTEXT_SYSTEM,
+				'contextlevel' => CONTEXT_MODULE,
 				'legacy' => array (
 						'guest' => CAP_PROHIBIT,
 						'student' => CAP_ALLOW,
 						'teacher' => CAP_PROHIBIT,
-						'editingteacher' => CAP_PROHIBIT 
+						'editingteacher' => CAP_PROHIBIT,
+						'manager' => CAP_PROHIBIT 
 				) 
 		),
-		 
+		'mod/throwquestions:battleground' => array (
+				'captype' => 'read',
+				'contextlevel' => CONTEXT_MODULE,
+				'legacy' => array (
+						'guest' => CAP_PROHIBIT,
+						'editingteacher' => CAP_ALLOW,
+						'teacher' => CAP_ALLOW,
+						'manager'=>CAP_ALLOW
+				)
+					
+		)
+		
 );

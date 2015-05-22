@@ -44,7 +44,8 @@ $insert = array (
 		'question' => $questionid,
 		'sender_id' => $sender,
 		'receiver_id' => $oponent,
-		'status' => $status 
+		'status' => $status,
+		'cm_id'=>$cmid 
 );
 // URL where the redirection is going to be targeted.
 $url = new moodle_url ( '/mod/throwquestions/view.php', array (

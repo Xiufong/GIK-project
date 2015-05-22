@@ -36,6 +36,11 @@ $string ['throwquestionsname_help'] = 'This is the content of the help tooltip a
 $string ['throwquestions'] = 'Throw Questions';
 $string ['pluginadministration'] = 'Throw Questions administration';
 $string ['pluginname'] = 'Throw Questions';
+$string ['throwquestions:addinstance'] = 'Add Instance';
+$string ['throwquestions:battleground'] = 'Battleground';
+$string ['throwquestions:canfight'] = 'canfight';
+$string ['throwquestions:submit'] = 'Submit';
+$string ['throwquestions:view'] = 'view';
 
 $string ['invalidcoursemodule'] = "Invalid Course Module";
 $string ['error'] = "Error";
@@ -55,6 +60,9 @@ $string ['doyouwanttowanswerthequestion'] = 'Do you wanna answer the question?';
 $string ['sender'] = 'Sender';
 $string ['battleid'] = 'Battle ID';
 $string ['iwantthisone'] = 'I want this one!';
+$string ['winner'] = 'Winner';
+$string ['status'] = 'Status';
+$string ['receiver'] = 'Receiver';
 
 
 

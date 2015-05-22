@@ -82,6 +82,8 @@ function xmldb_throwquestions_upgrade($oldversion) {
         $table->add_field('status', XMLDB_TYPE_INTERGER, '1', null, XMLDB_NOTNULL, null, null);
         $table->add_field('winner', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
         $table->add_field('answer', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('cm_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        
 
         // Adding keys to table battle.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));

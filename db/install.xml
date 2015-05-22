@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/throwquestions/db" VERSION="20150517" COMMENT="XMLDB file for Moodle mod/throwquestions"
+<XMLDB PATH="mod/throwquestions/db" VERSION="20150521" COMMENT="XMLDB file for Moodle mod/throwquestions"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -21,6 +21,7 @@
         <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="State of the battle 1 if ended 0 if pending"/>
         <FIELD NAME="winner" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="answer" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="answer"/>
+        <FIELD NAME="cm_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
