@@ -83,11 +83,8 @@ $duelists = array (
 );
 
 /* ----------VIEW---------- */
-
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
-
 // print table with all the questions to be selected
 echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
-
 echo $OUTPUT->footer ();

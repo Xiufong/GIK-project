@@ -45,7 +45,7 @@ $insert = array (
 		'sender_id' => $sender,
 		'receiver_id' => $oponent,
 		'status' => $status,
-		'cm_id'=>$cmid 
+		'cm_id' => $cmid 
 );
 // URL where the redirection is going to be targeted.
 $url = new moodle_url ( '/mod/throwquestions/view.php', array (
@@ -56,8 +56,8 @@ $newbattle = $DB->insert_record ( 'battle', $insert );
 // Validates if the insertion was executed correctly, if it wasn't it will display a message.
 if (! $newbattle) {
 	$validation = get_string ( 'battlecouldnotbecomplete', 'mod_throwquestions' );
-	redirect ( $url, $validation, 10 );
+	redirect ( $url, $validation, 5 );
 } else {
 	$validation = get_string ( 'youhavesentabattle', 'mod_throwquestions' );
-	redirect ( $url, $validation, 10 );
+	redirect ( $url, $validation, 5 );
 }

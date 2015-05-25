@@ -197,7 +197,7 @@ function get_all_the_questions_from_question_bank_table($context, $cmid, $duelis
  * @param int $questionid        	
  * @return table with all the posible answer for the question
  */
-function answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid) {
+function get_answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid) {
 	global $PAGE, $CFG, $OUTPUT, $DB;
 	
 	// get all the categories from the course.
@@ -215,9 +215,7 @@ function answer_menu($context, $cmid, $questionid, $sender, $receiver, $battleid
 		foreach ( $questions as $question ) {
 			if ($question->id == $questionid) {
 				// request all the answers for an specific question.
-				$answers = $DB->get_records ( 'question_answers', array (
-						'question' => $questionid 
-				) );
+				$answers = $DB->get_records_select ( 'question_answers', "question = " . $questionid . " ORDER BY RAND()" );
 				$questiontext = $question->questiontext;
 				// run all the answers
 				foreach ( $answers as $answer ) {
@@ -306,7 +304,6 @@ function get_all_challenges($sender, $cmid) {
 			) );
 			// Prepares the data for the table.
 			$data [] = array (
-					$battle->id,
 					$sendernames->firstname . ' ' . $sendernames->lastname,
 					$question->questiontext,
 					$OUTPUT->single_button ( $url, get_string ( 'doyouwanttowanswerthequestion', 'mod_throwquestions' ) ) 
@@ -319,7 +316,6 @@ function get_all_challenges($sender, $cmid) {
 	$table->attributes ['style'] = "text-align:center;";
 	// Table Headings
 	$table->head = array (
-			get_string ( 'battleid', 'mod_throwquestions' ),
 			get_string ( 'sender', 'mod_throwquestions' ),
 			get_string ( 'question', 'mod_throwquestions' ),
 			'' 
@@ -404,6 +400,12 @@ function get_battleground($cmid) {
 	$battleground = html_writer::table ( $table );
 	return $battleground;
 }
+/**
+ * This function get a list with all the scores order by rank.
+ * 
+ * @param int $cmid        	
+ * @return A table with all the score table and rank
+ */
 function get_scores($cmid) {
 	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
 	$getscoresqry = "SELECT u.id, u.firstname,u.lastname,count(b.winner) AS score

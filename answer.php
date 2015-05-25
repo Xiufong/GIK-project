@@ -83,7 +83,7 @@ $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
 // get the all the info from the function in a variable
-$answerfromthequestion = answer_menu ( $contextcourse->id, $cm->id, $questionid, $sender, $receiver, $battleid );
+$answerfromthequestion = get_answer_menu ( $contextcourse->id, $cm->id, $questionid, $sender, $receiver, $battleid );
 
 /* ----------VIEW---------- */
 

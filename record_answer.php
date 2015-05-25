@@ -69,9 +69,9 @@ $endbattle = $DB->update_record ( 'battle', $update );
 // Validates if the update was correctly executed, if not it will display a message saying "Error".
 if (! $endbattle) {
 	$validation = get_string ( 'error', 'mod_throwquestions' );
-	redirect ( $url, $validation, 10 );
+	redirect ( $url, $validation, 5 );
 } else {
-	redirect ( $url, $message, 10 );
+	redirect ( $url, $message, 5 );
 }
 
 

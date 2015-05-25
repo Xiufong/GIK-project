@@ -65,7 +65,7 @@ $contextcourse = context_course::instance ( $id );
 
 // URL
 $url = new moodle_url ( '/mod/throwquestions/score.php', array (
-		'id' => $cm->id,		
+		'id' => $cm->id 
 ) );
 
 // Page setup and breadcrumbs
@@ -76,13 +76,10 @@ $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
 
 /* ----------VIEW---------- */
-
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print the tabtree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'score' );
 // print the table with the scores.
-
 echo get_scores ( $cm->id );
-
 echo $OUTPUT->footer ();
