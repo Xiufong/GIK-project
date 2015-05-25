@@ -24,6 +24,7 @@
  * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *         
+ *         
  */
 require_once ('../../config.php');
 require_once ($CFG->dirroot . "/mod/throwquestions/locallib.php");
@@ -33,24 +34,22 @@ global $PAGE, $CFG, $OUTPUT, $DB;
 
 // required parameters in that where passed via url
 $cmid = required_param ( 'id', PARAM_INT );
-$oponent = required_param ( 'oponentid', PARAM_INT );
-$sender = required_param ( 'sender', PARAM_INT );
 
 // Corroborates Course Module
 if (! $cm = get_coursemodule_from_id ( 'throwquestions', $cmid )) {
-	print_error ( get_string ( 'invalidcoursemodule', 'mod_throwquestions' ) );
+	print_error ( "Invalid Course Module" );
 }
 if (! $throwquestion = $DB->get_record ( 'throwquestions', array (
 		'id' => $cm->instance 
 ) )) {
-	print_error ( get_string ( 'error', 'mod_throwquestions' ) );
+	print_error ( "error" );
 }
 
 // Corroborates the course
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $throwquestion->course 
 ) )) {
-	print_error ( get_string ( 'error', 'mod_throwquestions' ) );
+	print_error ( 'error' );
 }
 // context module
 $context = context_module::instance ( $cm->id );
@@ -65,29 +64,25 @@ require_login ( $id );
 $contextcourse = context_course::instance ( $id );
 
 // URL
-$url = new moodle_url ( '/mod/throwquestions/questions.php', array (
-		'id' => $cmid,
-		'sender' => $sender,
-		'oponent' => $oponent 
+$url = new moodle_url ( '/mod/throwquestions/score.php', array (
+		'id' => $cm->id,		
 ) );
+
 // Page setup and breadcrumbs
 $PAGE->set_url ( $url );
 $PAGE->set_course ( $course );
 $PAGE->set_heading ( $course->fullname );
 $PAGE->navbar->add ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 $PAGE->set_pagelayout ( 'standard' );
-// Variable that conteins the sender and the receiver of the question.
-$duelists = array (
-		'sender' => $sender,
-		'oponent' => $oponent 
-);
 
 /* ----------VIEW---------- */
 
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
+// print the tabtree
+echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'score' );
+// print the table with the scores.
 
-// print table with all the questions to be selected
-echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
+echo get_scores ( $cm->id );
 
 echo $OUTPUT->footer ();

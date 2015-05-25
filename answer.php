@@ -68,7 +68,11 @@ $contextcourse = context_course::instance ( $id );
 
 // URL
 $url = new moodle_url ( '/mod/throwquestions/answer.php', array (
-		'cmid' => $cm->id 
+		'id' => $cm->id,
+		'qid' => $questionid,
+		'sender' => $sender,
+		'receiver' => $receiver,
+		'battleid' => $battleid 
 ) );
 
 // Page setup and breadcrumbs

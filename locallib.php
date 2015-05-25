@@ -43,7 +43,7 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
 	$tab = new tabobject ( 'list', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Throwquestions' );
 	// First sub tree called viewlist.
 	if (has_capability ( 'mod/throwquestions:canfight', $context )) {
-		$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List' );
+		$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'List of players' );
 	} else {
 		$tab->subtree [] = new tabobject ( 'viewlist', $CFG->wwwroot . "/mod/throwquestions/view.php?id={$cmid}", 'Battleground' );
 	}
@@ -56,6 +56,7 @@ function option_tab($cmid, $courseid, $sesskey, $context) {
 	if (has_capability ( 'mod/throwquestions:canfight', $context )) {
 		$tab->subtree [] = new tabobject ( 'check', $CFG->wwwroot . "/mod/throwquestions/lobby.php?id={$cmid}", 'Check' );
 	}
+	$tab->subtree [] = new tabobject ( 'score', $CFG->wwwroot . "/mod/throwquestions/score.php?id={$cmid}", 'Scores' );
 	// saves all the tabs in a variable.
 	$tabs [] = $tab;
 	return $tabs;
@@ -329,8 +330,15 @@ function get_all_challenges($sender, $cmid) {
 	$battletable = html_writer::table ( $table );
 	return $battletable;
 }
+/**
+ * This function get a list with all the battle an their status.
+ *
+ * @param int $cmid        	
+ * @return A Battle list with name and status.
+ */
 function get_battleground($cmid) {
 	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
+	// query to get every battle and status with all the names of the sender, receiver and winner, and also the question.
 	$getbattleswithnameqry = "	SELECT b.id,r.receiversname, r.receiverslastname, s.sendersname, s.senderslastname, qu.question, b.winner, b.status, w.winnersfirstname,w.winnerslastname
 								FROM {battle} AS b
 								JOIN (	SELECT b.receiver_id AS receiverid,u.firstname AS receiversname,u.lastname AS receiverslastname
@@ -357,11 +365,13 @@ function get_battleground($cmid) {
 	) );
 	$data = '';
 	foreach ( $battles as $battle ) {
+		// this if, check the status of the battle
 		if ($battle->status == 0) {
-			$status = 'Battle in Progress';
+			$status = get_string ( 'battleinprogress', 'mod_throwquestions' );
 		} else {
-			$status = 'Battle Finished';
+			$status = get_string ( 'battlefinished', 'mod_throwquestions' );
 		}
+		// this if check if the battle has a winner or not, if it does it shows their names.
 		if ($battle->winner == null) {
 			$winner = '--';
 		} else {
@@ -394,7 +404,54 @@ function get_battleground($cmid) {
 	$battleground = html_writer::table ( $table );
 	return $battleground;
 }
-
+function get_scores($cmid) {
+	global $PAGE, $CFG, $OUTPUT, $DB, $USER;
+	$getscoresqry = "SELECT u.id, u.firstname,u.lastname,count(b.winner) AS score
+					FROM {battle} b
+					JOIN {user} u ON (u.id=b.winner)
+					WHERE b.cm_id=?
+					GROUP BY b.winner
+					ORDER BY score DESC";
+	$param = array (
+			$cmid 
+	);
+	$scores = $DB->get_records_sql ( $getscoresqry, $param );
+	$data = '';
+	$rank = 1;
+	$prevscore = 0;
+	foreach ( $scores as $score ) {
+		if ($prevscore == 0) {
+			$prevscore = intval ( $score->score );
+		} else {
+			if ($prevscore == intval ( $score->score )) {
+				$rank = $rank;
+			} else {
+				$rank ++;
+			}
+		}
+		$data [] = array (
+				$rank,
+				$score->firstname . ' ' . $score->lastname,
+				$score->score 
+		);
+	}
+	
+	$table = new html_table ();
+	// Creates the atributes
+	$table->attributes ['style'] = "text-align:center;";
+	// Table Headings
+	$table->head = array (
+			get_string ( 'rank', 'mod_throwquestions' ),
+			get_string ( 'name', 'mod_throwquestions' ),
+			get_string ( 'score', 'mod_throwquestions' ) 
+	);
+	// Insert the data in the table
+	$table->data = $data;
+	// Render the table in a variable.
+	$scoretable = html_writer::table ( $table );
+	
+	return $scoretable;
+}
 
 
 

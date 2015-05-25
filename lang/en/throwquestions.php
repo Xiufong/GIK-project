@@ -63,6 +63,12 @@ $string ['iwantthisone'] = 'I want this one!';
 $string ['winner'] = 'Winner';
 $string ['status'] = 'Status';
 $string ['receiver'] = 'Receiver';
+$string ['battleinprogress'] = 'Battle in Progress';
+$string ['battlefinished'] = 'Battle Finished';
+$string ['rank'] = 'Rank';
+$string ['name'] = 'Name';
+$string ['score'] = 'Score';
+
 
 
 
