@@ -61,14 +61,7 @@ class mod_throwquestions_mod_form extends moodleform_mod {
 		
 		// Adding the standard "intro" and "introformat" fields.
 		$this->add_intro_editor ();
-		
-		// Adding the rest of throwquestions settings, spreading all them into this fieldset
-		// ... or adding more fieldsets ('header' elements) if needed for better logic.
-		$mform->addElement ( 'static', 'label1', 'throwquestionssetting1', 'Your throwquestions fields go here. Replace me!' );
-		
-		$mform->addElement ( 'header', 'throwquestionsfieldset', get_string ( 'throwquestionsfieldset', 'mod_throwquestions' ) );
-		$mform->addElement ( 'static', 'label2', 'throwquestionssetting2', 'Your throwquestions fields go here. Replace me!' );
-		
+
 		// Add standard grading elements.
 		$this->standard_grading_coursemodule_elements ();
 		
