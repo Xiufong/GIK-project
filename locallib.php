@@ -85,7 +85,7 @@ function throwquestions_get_students_that_can_fight($courseid, $user, $cmid) {
 	$rs = $DB->get_recordset_sql ( $query, array (
 			$courseid,
 			$user,
-			0,
+			THROWQUESTIONS_STATUS_IN_PROGRESS,
 			$user,
 			$cmid 
 	) );
@@ -164,7 +164,7 @@ function get_all_the_questions_from_question_bank_table($context, $cmid, $duelis
 					'qid' => $question->id,
 					'sender' => $duelists ['sender'],
 					'oponent' => $duelists ['oponent'],
-					'status' => 0 
+					'status' => THROWQUESTIONS_STATUS_IN_PROGRESS
 			) );
 			// Prepares the data for the table.
 			$data [] = array (
@@ -273,7 +273,7 @@ function get_all_challenges($sender, $cmid) {
 	// Sets the parameters to search the battles pending
 	$param = array (
 			'receiver_id' => $sender,
-			'status' => 0 
+			'status' => THROWQUESTIONS_STATUS_IN_PROGRESS 
 	);
 	// Get all the pending battles in a variable
 	$battles = $DB->get_records ( 'battle', $param );
@@ -362,7 +362,7 @@ function get_battleground($cmid) {
 	$data = '';
 	foreach ( $battles as $battle ) {
 		// this if, check the status of the battle
-		if ($battle->status == 0) {
+		if ($battle->status == THROWQUESTIONS_STATUS_IN_PROGRESS) {
 			$status = get_string ( 'battleinprogress', 'mod_throwquestions' );
 		} else {
 			$status = get_string ( 'battlefinished', 'mod_throwquestions' );

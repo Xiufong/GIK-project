@@ -60,7 +60,7 @@ if ($percentage == 1) {
 // Parameters that are going to be added or updated, which cointais the results of the battle
 $update = array (
 		'id' => $battleid,
-		'status' => 1,
+		'status' => THROWQUESTIONS_STATUS_FINISHED,
 		'winner' => $winner,
 		'answer' => $answerid 
 );
