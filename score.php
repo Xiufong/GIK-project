@@ -80,6 +80,11 @@ echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print the tabtree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'score' );
-// print the table with the scores.
-echo get_scores ( $cm->id );
+$scores = get_scores ( $cm->id );
+if ($scores != 0) {
+	// print the table with the scores.
+	echo $scores;
+} else {
+	echo $OUTPUT->notification ( get_string ( "therearenoscoresavailable", "mod_throwquestions" ), 'notifyproblem' );
+}
 echo $OUTPUT->footer ();

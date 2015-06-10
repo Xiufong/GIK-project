@@ -42,35 +42,34 @@ $string ['throwquestions:canfight'] = 'canfight';
 $string ['throwquestions:submit'] = 'Submit';
 $string ['throwquestions:view'] = 'view';
 
-$string ['invalidcoursemodule'] = "Invalid Course Module";
-$string ['error'] = "Error";
-$string ['congratsyouhavewon'] = "Yay congrats you have won!";
-$string ['sorryyouhavelost'] = 'Sorry you have lost, get some REVENGE';
-$string ['questionoutofparameters'] = "The answer of this question doesn't fulfill the parameters";
-$string ['battlecouldnotbecomplete'] = "Error: Sorry Bro, your battle couldn't be done";
-$string ['youhavesentabattle'] = "Yay! Congrats you have started a WAR";
+$string ['invalidcoursemodule'] = "Invalid Course Module.";
+$string ['error'] = "Error.";
+$string ['congratsyouhavewon'] = "Yay congrats you have won!.";
+$string ['sorryyouhavelost'] = 'Sorry you have lost, get some REVENGE.';
+$string ['questionoutofparameters'] = "The answer of this question doesn't fulfill the parameters.";
+$string ['battlecouldnotbecomplete'] = "Error: Sorry Bro, your battle couldn't be done.";
+$string ['youhavesentabattle'] = "Yay! Congrats you have started a WAR.";
 $string ['challenge'] = "Challenge";
 $string ['students'] = 'Students';
 $string ['id'] = 'id';
-$string ['whodoyouwanttobattle'] = 'Who do you want to battle?';
+$string ['whodoyouwanttobattle'] = 'Who do you want to battle?.';
 $string ['question'] = 'Question';
 $string ['answer'] = 'Answer';
 $string ['select'] = 'Select';
-$string ['doyouwanttowanswerthequestion'] = 'Do you wanna answer the question?';
+$string ['doyouwanttowanswerthequestion'] = 'Do you wanna answer the question?.';
 $string ['sender'] = 'Sender';
 $string ['battleid'] = 'Battle ID';
-$string ['iwantthisone'] = 'I want this one!';
+$string ['iwantthisone'] = 'I want this one!.';
 $string ['winner'] = 'Winner';
 $string ['status'] = 'Status';
 $string ['receiver'] = 'Receiver';
-$string ['battleinprogress'] = 'Battle in Progress';
-$string ['battlefinished'] = 'Battle Finished';
+$string ['battleinprogress'] = 'Battle in Progress.';
+$string ['battlefinished'] = 'Battle Finished.';
 $string ['rank'] = 'Rank';
 $string ['name'] = 'Name';
 $string ['score'] = 'Score';
-
-
-
-
-
-
+$string ['sorryyoudonthavecapabilities'] = "Sorry, You don't have any capabilities.";
+$string ['therearenobattlesavailable'] = "There are no battles available.";
+$string ['therearenoscoresavailable'] = "There are scores available yet!.";
+$string ['therearenoquestionsavailable']="There are no questions available.";
+$string['therearenochallengesavailable']="There are no challenges available.";

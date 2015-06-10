@@ -77,11 +77,18 @@ echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'viewlist' );
 
 if (has_capability ( 'mod/throwquestions:battleground', $context )) {
-	echo get_battleground ($cm->id);
+	$battleground = get_battleground ( $cm->id );
+	if ($battleground != 0) {
+		echo $battleground;
+	} else {
+		// notification if there are no battles available.
+		echo $OUTPUT->notification ( get_string ( "therearenobattlesavailable", "mod_throwquestions" ), 'notifyproblem' );
+	}
 } elseif (has_capability ( 'mod/throwquestions:canfight', $context )) {
 	// Print a table with all the students
 	echo get_all_students ( $users, $cm->id, $USER->id );
 } else {
-	echo "Sorry, You don't have any capabilities";
+	// notification if the user doesn't have capabilities.
+	echo $OUTPUT->notification ( get_string ( "sorryyoudonthavecapabilities", "mod_throwquestions" ), 'notifyproblem' );
 }
 echo $OUTPUT->footer ();
