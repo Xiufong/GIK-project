@@ -34,7 +34,7 @@ defined ( 'MOODLE_INTERNAL' ) || die ();
  * Example constant, you probably want to remove this :-)
  */
 define ( 'THROWQUESTIONS_STATUS_IN_PROGRESS',0 );
-define ( 'THROWQUESTIONS_STATUS_FINISHED',1 )
+define ( 'THROWQUESTIONS_STATUS_FINISHED',1 );
 
 /* Moodle core API */
 
