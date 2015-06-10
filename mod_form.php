@@ -32,7 +32,7 @@ require_once ($CFG->dirroot . '/course/moodleform_mod.php');
  * Module instance settings form
  *
  * @package mod_throwquestions
- * @copyright 2015 Your Name
+ * @copyright 2015 Xiu-Fong Lin <xlin@alumnos.uai.cl>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_throwquestions_mod_form extends moodleform_mod {
@@ -61,7 +61,7 @@ class mod_throwquestions_mod_form extends moodleform_mod {
 		
 		// Adding the standard "intro" and "introformat" fields.
 		$this->add_intro_editor ();
-
+		
 		// Add standard grading elements.
 		$this->standard_grading_coursemodule_elements ();
 		
