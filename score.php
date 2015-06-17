@@ -81,7 +81,7 @@ echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print the tabtree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'score' );
 $scores = get_scores ( $cm->id );
-if ($scores != 0) {
+if (strlen($scores) != THROWQUESTIONS_SCORETABLE) {
 	// print the table with the scores.
 	echo $scores;
 } else {

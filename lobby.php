@@ -80,11 +80,12 @@ echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // Print the tab tree
 echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $context ), 'check' );
-$challenges=get_all_challenges ( $USER->id, $cmid );;
-if($challenges!=0){
-// Print a table with all the pending battles.
-echo $challenges;
-}else{
+$challenges = get_all_challenges ( $USER->id, $cmid );
+// TODO: add to constant
+if (strlen ( $challenges ) != THROWQUESTIONS_LOBBYTABLE) {
+	// Print a table with all the pending battles.
+	echo $challenges;
+} else {
 	echo $OUTPUT->notification ( get_string ( "therearenochallengesavailable", "mod_throwquestions" ), 'notifyproblem' );
 }
 echo $OUTPUT->footer ();

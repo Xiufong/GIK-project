@@ -78,7 +78,8 @@ echo $OUTPUT->tabtree ( option_tab ( $cm->id, $course->id, $USER->sesskey, $cont
 
 if (has_capability ( 'mod/throwquestions:battleground', $context )) {
 	$battleground = get_battleground ( $cm->id );
-	if ($battleground != 0) {
+	// TODO: add to constant
+	if (strlen ( $battleground ) != THROWQUESTIONS_BATTLEGROUNDTABLE) {
 		echo $battleground;
 	} else {
 		// notification if there are no battles available.
