@@ -92,11 +92,6 @@ echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // Print the question before the table.
 echo $OUTPUT->heading ( $answerfromthequestion ['question'] );
 // Print a table with all the answers.
-$answers=$answerfromthequestion ['table'];
-if($answers!=0){
-	echo $answers;
-}else{
-	echo $OUTPUT->notification ( get_string ( "therearenoquestionsavailable", "mod_throwquestions" ), 'notifyproblem' );
-}
-
+$answers = $answerfromthequestion ['table'];
+echo $answers;
 echo $OUTPUT->footer ();
