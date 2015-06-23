@@ -86,5 +86,14 @@ $duelists = array (
 echo $OUTPUT->header ();
 echo $OUTPUT->heading ( get_string ( "throwquestions", 'mod_throwquestions' ) );
 // print table with all the questions to be selected
-echo get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
+$questions = get_all_the_questions_from_question_bank_table ( $contextcourse->id, $cm->id, $duelists );
+if (strlen ( $questions ) != THORWQUESTIONS_QUESTIONSTABLE) {
+	echo $questions;
+} else {
+	$url = new moodle_url ( $CFG->wwwroot . "/question/question.php?category=&courseid={$course->id}&sesskey={$USER->sesskey}&qtype=multichoice&returnurl=%2Fmod%2Fthrowquestions%2Fview.php%3Fid%3D{$cmid}&courseid={$course->id}&category=1" );
+	echo $OUTPUT->notification ( get_string ( "therearenoquestionsavailable", "mod_throwquestions" ), 'notifyproblem' );
+	
+	echo $OUTPUT->single_button ( $url, get_string('createaquestion','mod_throwquestions') );
+}
+
 echo $OUTPUT->footer ();
